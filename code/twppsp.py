@@ -1,37 +1,57 @@
 import argparse
 import os
+import datetime
+
+#-- globals
+
+#--
 
 def processDir(dirName):
     
     for file in os.listdir(dirName):
-        # print('Processing: ', dirName);   
-        # fullFileName = dirName + '/' + file;
-        fullFileName = os.path.join(dirName, file);
+        fullFileName = os.path.join(dirName, file)
         if os.path.isdir(fullFileName) == True:
-            print('Dir: ', file, ':', fullFileName);   
-            processDir(fullFileName);
+            print('Dir: ', file, ':', fullFileName)  
+            processDir(fullFileName)
         else:
-            print('File: ', file);   
+            print('File: ', file) 
 
 #--
 
-print("Photo Publish Static");
+def assureDir(fullDirName):
+    
+    if not os.path.exists(fullDirName):
+        os.makedirs(fullDirName)
 
-parser = argparse.ArgumentParser(description='Short sample app')
+#--
 
-parser.add_argument('-pin', action="store", dest="photoInDir")
-parser.add_argument('-pout', action="store", dest="photoOutDir")
+def getArgs():
+    
+    parser = argparse.ArgumentParser(description='Short sample app')
 
-#args = parser.parse_args(['-pin', '/Users/albertosantaballa/Dropbox/Devel/twPhotoPublishStaticPython/photos_in', '-pout', '../out']); 
-args = parser.parse_args(['-pin', '../photos_in', '-pout', '../out']); 
+    parser.add_argument('-pin', action="store", dest="photoInDir")
+    parser.add_argument('-pout', action="store", dest="photoOutDir")
+    parser.add_argument('-piurl', action="store", dest="photoImageDir")
 
-print('DirIn:', args.photoInDir);
-print('DirOut:', args.photoOutDir);
+    global args
+    args = parser.parse_args([
+          '-pin', '../photos_in'
+        , '-pout', '/Users/albertosantaballa/temp'
+        , '-piurl', 'http://someimagestorage.com/al/images'
+        ]); 
 
-# for file in os.listdir(args.photoInDir):
-#     print('File: ', file);   
-#     if os.path.isdir(file) == True:
-#         print('isdir');
+    print('DirIn:', args.photoInDir)
+    print('DirOut:', args.photoOutDir)
+    print('Images URL:', args.photoImageDir)
 
-processDir(args.photoInDir);
+#--
+
+print("PhotoStatic")
+
+getArgs()
+
+outputFullDirName = os.path.join(args.photoOutDir,
+                                 'webout' + datetime.datetime.now().strftime("_%Y%m%d_%H%M%S"))
+assureDir(outputFullDirName)
+processDir(args.photoInDir)
 
