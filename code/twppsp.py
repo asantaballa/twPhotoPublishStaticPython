@@ -1,8 +1,8 @@
-import argparse
 import os
 import datetime
-
-#-- globals
+import generator
+import configClass
+import sys
 
 #--
 
@@ -26,23 +26,8 @@ def assureDir(fullDirName):
 #--
 
 def getArgs():
-    
-    parser = argparse.ArgumentParser(description='Short sample app')
-
-    parser.add_argument('-pin', action="store", dest="photoInDir")
-    parser.add_argument('-pout', action="store", dest="photoOutDir")
-    parser.add_argument('-piurl', action="store", dest="photoImageDir")
-
-    global args
-    args = parser.parse_args([
-          '-pin', '../photos_in'
-        , '-pout', '/Users/albertosantaballa/temp'
-        , '-piurl', 'http://someimagestorage.com/al/images'
-        ]); 
-
-    print('DirIn:', args.photoInDir)
-    print('DirOut:', args.photoOutDir)
-    print('Images URL:', args.photoImageDir)
+    global config
+    config = configClass.configClass()    #-- Instatiate config and make it like a module
 
 #--
 
@@ -50,8 +35,11 @@ print("PhotoStatic")
 
 getArgs()
 
-outputFullDirName = os.path.join(args.photoOutDir,
+outputFullDirName = os.path.join(config.photoOutDir,
                                  'webout' + datetime.datetime.now().strftime("_%Y%m%d_%H%M%S"))
 assureDir(outputFullDirName)
-processDir(args.photoInDir)
+processDir(config.photoInDir)
+
+genx = generator.generator()
+genx.generate()
 
